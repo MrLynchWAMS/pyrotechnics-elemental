@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pyrotechnics: It's Elemental — Interactive Periodic Table</title>
+  <style>
+    :root {
+      --bg-deep: #090d16;
+      --bg-panel: #111827;
+      --bg-card: #182236;
+      --bg-tile: #141c2e;
+      --border-subtle: #26334d;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-gold: #fbbf24;
+      --accent-cyan: #38bdf8;
+      --accent-emerald: #34d399;
+      --accent-rose: #fb7185;
+
+      /* Family Colors */
+      --fam-alkali: #ef4444;
+      --fam-alkaline: #f97316;
+      --fam-transition: #eab308;
+      --fam-post-trans: #10b981;
+      --fam-metalloid: #14b8a6;
+      --fam-nonmetal: #3b82f6;
+      --fam-halogen: #8b5cf6;
+      --fam-noble: #ec4899;
+      --fam-lanthanide: #6366f1;
+      --fam-actinide: #a855f7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at top, #131c31 0%, var(--bg-deep) 65%);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.55;
+    }
+
+    /* Header & Hero */
+    header {
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(9, 13, 22, 0.85);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0.9rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .brand h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      padding: 0.45rem 0.95rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      border-color: var(--accent-cyan);
+    }
+
+    .tab-btn.active {
+      background: var(--accent-cyan);
+      color: #06101f;
+      border-color: var(--accent-cyan);
+    }
+
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    .intro-banner {
+      background: linear-gradient(135deg, rgba(24, 34, 54, 0.95), rgba(17, 24, 39, 0.95));
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .intro-text {
+      max-width: 820px;
+    }
+
+    .intro-text p {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .intro-text p:last-child {
+      margin-bottom: 0;
+      color: var(--accent-gold);
+      font-weight: 500;
+    }
+
+    .inline-link {
+      color: var(--accent-cyan);
+      text-decoration: underline;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font: inherit;
+      font-weight: 600;
+    }
+
+    /* Filter Toolbar */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      background: var(--bg-panel);
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      align-items: center;
+    }
+
+    .filter-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-right: 0.25rem;
+      font-weight: 700;
+    }
+
+    .filter-btn {
+      background: var(--bg-tile);
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .filter-btn:hover {
+      color: var(--text-main);
+      border-color: #475569;
+    }
+
+    .filter-btn.active {
+      background: rgba(251, 191, 36, 0.16);
+      color: var(--accent-gold);
+      border-color: var(--accent-gold);
+    }
+
+    .legend-pills {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .swatch-ws {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      border: 2px solid var(--accent-gold);
+      background: rgba(251, 191, 36, 0.2);
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+    }
+
+    .swatch-nova {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      border: 2px solid var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.15);
+    }
+
+    /* Main Workspace Layout */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 1fr 370px;
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1120px) {
+      .workspace-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Periodic Table Container */
+    .ptable-wrapper {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1rem;
+      overflow-x: auto;
+    }
+
+    .ptable-grid {
+      display: grid;
+      grid-template-columns: repeat(18, minmax(44px, 1fr));
+      grid-template-rows: repeat(10, 54px);
+      gap: 4px;
+      min-width: 840px;
+    }
+
+    .el-tile {
+      background: var(--bg-tile);
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 3px 4px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease, opacity 0.2s ease;
+      user-select: none;
+    }
+
+    .el-tile.dimmed {
+      opacity: 0.35;
+    }
+
+    .el-tile.dimmed:hover {
+      opacity: 0.85;
+    }
+
+    /* Highlighted Worksheet Elements (12) */
+    .el-tile.is-worksheet {
+      border: 2px solid var(--accent-gold);
+      background: linear-gradient(160deg, rgba(251, 191, 36, 0.18), rgba(20, 28, 46, 0.95));
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.22);
+    }
+
+    .el-tile.is-worksheet::after {
+      content: "★";
+      position: absolute;
+      top: 2px;
+      right: 3px;
+      font-size: 0.55rem;
+      color: var(--accent-gold);
+    }
+
+    /* Additional Original NOVA Pyrotechnic Elements (7) */
+    .el-tile.is-nova {
+      border: 2px solid var(--accent-cyan);
+      background: linear-gradient(160deg, rgba(56, 189, 248, 0.16), rgba(20, 28, 46, 0.95));
+    }
+
+    .el-tile:hover {
+      transform: translateY(-2px) scale(1.06);
+      z-index: 10;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
+    }
+
+    .el-tile.selected {
+      transform: scale(1.08);
+      z-index: 12;
+      outline: 2px solid #ffffff;
+      box-shadow: 0 0 18px rgba(255, 255, 255, 0.45);
+    }
+
+    .el-num {
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      line-height: 1;
+    }
+
+    .el-sym {
+      font-size: 1rem;
+      font-weight: 800;
+      text-align: center;
+      line-height: 1.05;
+      color: #fff;
+    }
+
+    .el-name {
+      font-size: 0.53rem;
+      text-align: center;
+      color: #cbd5e1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.1;
+    }
+
+    .series-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      border: 1px dashed #334155;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    /* Family Color-Coding Mode */
+    .family-mode .el-tile {
+      opacity: 0.95 !important;
+      border-width: 1.5px;
+    }
+
+    .family-legend {
+      display: none;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.85rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .family-legend.visible {
+      display: flex;
+    }
+
+    .fam-chip {
+      font-size: 0.74rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .fam-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    /* Inspector Panel */
+    .inspector-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      overflow: hidden;
+      position: sticky;
+      top: 84px;
+    }
+
+    .firework-stage {
+      position: relative;
+      height: 175px;
+      background: radial-gradient(circle at bottom, #16213e 0%, #050811 100%);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    #burstCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .replay-btn {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(15, 23, 42, 0.82);
+      color: #f8fafc;
+      border: 1px solid #334155;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .replay-btn:hover {
+      border-color: var(--accent-gold);
+      color: var(--accent-gold);
+    }
+
+    .inspector-body {
+      padding: 1.25rem;
+    }
+
+    .el-header-row {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .big-symbol-box {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      background: var(--bg-card);
+      border: 2px solid var(--accent-gold);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .big-symbol-box .num {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .big-symbol-box .sym {
+      font-size: 1.65rem;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .el-title-meta h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.35rem;
+    }
+
+    .role-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.18rem 0.55rem;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.16);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+
+    .ws-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.18rem 0.55rem;
+      border-radius: 999px;
+      background: rgba(251, 191, 36, 0.16);
+      color: var(--accent-gold);
+      border: 1px solid rgba(251, 191, 36, 0.4);
+    }
+
+    .data-field {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 0.75rem 0.9rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .data-field-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+
+    .data-field-value {
+      font-size: 0.95rem;
+      color: #f8fafc;
+      font-weight: 500;
+    }
+
+    .sub-note {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .quick-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-top: 0.9rem;
+    }
+
+    .quick-nav button {
+      flex: 1;
+      background: var(--bg-tile);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      padding: 0.45rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .quick-nav button:hover {
+      border-color: var(--accent-cyan);
+    }
+
+    /* Views Management */
+    .view-section {
+      display: none;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    /* Worksheet View */
+    .worksheet-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1.5rem;
+    }
+
+    .ws-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .action-btn {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      padding: 0.5rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .action-btn:hover {
+      border-color: var(--accent-cyan);
+    }
+
+    .action-btn.primary {
+      background: var(--accent-emerald);
+      color: #052016;
+      border-color: var(--accent-emerald);
+    }
+
+    .action-btn.warn {
+      background: rgba(251, 191, 36, 0.16);
+      color: var(--accent-gold);
+      border-color: var(--accent-gold);
+    }
+
+    .ws-table-wrap {
+      overflow-x: auto;
+    }
+
+    table.ws-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    .ws-table th,
+    .ws-table td {
+      border: 1px solid #334155;
+      padding: 0.65rem 0.8rem;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .ws-table th {
+      background: var(--bg-card);
+      color: var(--accent-gold);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .ws-table td.sym-cell {
+      font-weight: 800;
+      font-size: 1.05rem;
+      text-align: center;
+      width: 80px;
+      background: rgba(20, 28, 46, 0.7);
+      cursor: pointer;
+      color: var(--accent-cyan);
+    }
+
+    .ws-table td.sym-cell:hover {
+      text-decoration: underline;
+    }
+
+    .ws-input {
+      width: 100%;
+      background: #0b111e;
+      border: 1px solid #2d3b55;
+      color: #f8fafc;
+      padding: 0.45rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+
+    .ws-input:focus {
+      outline: none;
+      border-color: var(--accent-cyan);
+    }
+
+    .ws-input.correct {
+      border-color: var(--accent-emerald);
+      background: rgba(16, 185, 129, 0.12);
+    }
+
+    .ws-input.needs-review {
+      border-color: var(--accent-rose);
+      background: rgba(244, 63, 94, 0.12);
+    }
+
+    /* Periodic Table Guide & Sandbox View */
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .guide-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1.25rem;
+    }
+
+    .guide-card h3 {
+      color: var(--accent-gold);
+      margin-bottom: 0.6rem;
+      font-size: 1.1rem;
+    }
+
+    .guide-card p, .guide-card li {
+      color: #cbd5e1;
+      font-size: 0.92rem;
+    }
+
+    .guide-card ul {
+      padding-left: 1.2rem;
+      margin-top: 0.5rem;
+    }
+
+    .guide-card li {
+      margin-bottom: 0.4rem;
+    }
+
+    /* Firework Builder Lab */
+    .lab-layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 900px) {
+      .lab-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .lab-controls {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1.25rem;
+    }
+
+    .lab-field {
+      margin-bottom: 1rem;
+    }
+
+    .lab-field label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .lab-field select {
+      width: 100%;
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      padding: 0.55rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    .lab-canvas-box {
+      background: #04070f;
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      overflow: hidden;
+      position: relative;
+      min-height: 400px;
+    }
+
+    #labCanvas {
+      width: 100%;
+      height: 400px;
+      display: block;
+    }
+
+    .lab-readout {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid #334155;
+      padding: 0.65rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+    }
+
+    @media print {
+      header, .toolbar, .inspector-card, .ws-controls button {
+        display: none !important;
+      }
+      body, .worksheet-panel {
+        background: #fff !important;
+        color: #000 !important;
+        border: none !important;
+      }
+      .ws-table th, .ws-table td {
+        border: 1px solid #000 !important;
+        color: #000 !important;
+      }
+      .ws-input {
+        border: none !important;
+        background: transparent !important;
+        color: #000 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <div class="brand">
+      <span class="brand-badge">NOVA Kaboom!</span>
+      <h1>Pyrotechnics: It's Elemental</h1>
+    </div>
+    <nav class="nav-tabs" aria-label="Activity sections">
+      <button class="tab-btn active" data-view="table-view">Interactive Periodic Table</button>
+      <button class="tab-btn" data-view="worksheet-view">Activity Worksheet (12 Elements)</button>
+      <button class="tab-btn" data-view="guide-view">About the Periodic Table</button>
+      <button class="tab-btn" data-view="lab-view">Firework Shell Simulator</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- INTRO BANNER -->
+  <section class="intro-banner">
+    <div class="intro-text">
+      <p>
+        Anyone who has seen a fireworks display has probably wondered, <em>"How'd they do that?"</em> Well, it's actually quite elemental—<strong>The Periodic Table of the Elements</strong>, that is. The whiz, bang, pop, and color are all possible by combining the most basic substances of which we know: the elements themselves.
+      </p>
+      <p>
+        Highlighted in the Periodic Table below are the important elements that make a firework work. Click any outlined element to inspect its family, colors, and effects—or <button class="inline-link" id="jumpGuideBtn">click here to find out more about the Periodic Table</button>.
+      </p>
+    </div>
+  </section>
+
+  <!-- VIEW 1: INTERACTIVE PERIODIC TABLE -->
+  <section id="table-view" class="view-section active">
+    <div class="toolbar">
+      <div class="filter-group">
+        <span class="filter-label">Highlight:</span>
+        <button class="filter-btn active" data-filter="all-pyro">All Firework Elements (19)</button>
+        <button class="filter-btn" data-filter="worksheet">Worksheet Elements Only (12)</button>
+        <button class="filter-btn" data-filter="color">Coloring Agents</button>
+        <button class="filter-btn" data-filter="effect">Sparks, Glitter &amp; Smoke</button>
+        <button class="filter-btn" data-filter="fuel-ox">Fuels &amp; Oxidizers</button>
+        <button class="filter-btn" id="toggleFamilyColors">Color-Code Families</button>
+      </div>
+      <div class="legend-pills">
+        <div class="legend-item"><span class="swatch-ws"></span> Worksheet Element (12)</div>
+        <div class="legend-item"><span class="swatch-nova"></span> Additional NOVA Element (7)</div>
+      </div>
+    </div>
+
+    <div class="workspace-grid">
+      <div class="ptable-wrapper">
+        <div id="ptableGrid" class="ptable-grid" role="grid" aria-label="Periodic Table of Elements"></div>
+        <div id="familyLegend" class="family-legend"></div>
+      </div>
+
+      <!-- Element Inspector Card -->
+      <aside class="inspector-card" aria-live="polite">
+        <div class="firework-stage">
+          <canvas id="burstCanvas" width="370" height="175"></canvas>
+          <button class="replay-btn" id="replayBurstBtn" title="Replay element effect">↻ Replay Effect</button>
+        </div>
+        <div class="inspector-body" id="inspectorBody">
+          <!-- Populated dynamically -->
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- VIEW 2: WORKSHEET TABLE -->
+  <section id="worksheet-view" class="view-section">
+    <div class="worksheet-panel">
+      <div class="ws-controls">
+        <div>
+          <h2 style="font-size: 1.25rem; margin-bottom: 0.2rem;">Pyrotechnics: It's Elemental — Student Data Table</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">
+            Fill in the <strong>Name</strong>, <strong>Family</strong>, and <strong>Colors and/or Effects</strong> for each of the 12 elements from your worksheet. Click any symbol to view it on the Periodic Table.
+          </p>
+        </div>
+        <div class="btn-group">
+          <button class="action-btn primary" id="checkAnswersBtn">Check My Answers</button>
+          <button class="action-btn warn" id="revealAnswersBtn">Reveal Answer Key</button>
+          <button class="action-btn" id="clearWorksheetBtn">Clear Table</button>
+          <button class="action-btn" onclick="window.print()">Print / Save PDF</button>
+        </div>
+      </div>
+
+      <div class="ws-table-wrap">
+        <table class="ws-table">
+          <thead>
+            <tr>
+              <th style="width: 85px; text-align: center;">Symbol</th>
+              <th style="width: 170px;">Name</th>
+              <th style="width: 230px;">Family</th>
+              <th>Colors and/or Effects</th>
+            </tr>
+          </thead>
+          <tbody id="worksheetTbody"></tbody>
+        </table>
+      </div>
+      <p id="wsFeedback" style="margin-top: 0.85rem; font-size: 0.9rem; font-weight: 600; color: var(--accent-cyan);"></p>
+    </div>
+  </section>
+
+  <!-- VIEW 3: ABOUT THE PERIODIC TABLE -->
+  <section id="guide-view" class="view-section">
+    <div class="guide-grid">
+      <div class="guide-card">
+        <h3>How the Periodic Table is Organized</h3>
+        <p>
+          The Periodic Table arranges all 118 known elements in order of increasing <strong>atomic number</strong> (the number of protons in an atom's nucleus).
+        </p>
+        <ul>
+          <li><strong>Periods (Rows 1–7):</strong> Horizontal rows show how many electron shells an atom has.</li>
+          <li><strong>Groups / Families (Columns 1–18):</strong> Vertical columns group elements with the same number of valence (outer) electrons, giving them similar chemical properties.</li>
+        </ul>
+      </div>
+
+      <div class="guide-card">
+        <h3>Key Pyrotechnic Families</h3>
+        <ul>
+          <li><strong>Alkali Metals (Group 1 — Li, Na, K):</strong> Soft, highly reactive metals that easily lose one outer electron and produce vivid flame colors (red, yellow/gold, violet).</li>
+          <li><strong>Alkaline Earth Metals (Group 2 — Mg, Ca, Sr, Ba):</strong> Reactive metals that burn brightly and give fireworks intense white flashes, orange, red, and green colors.</li>
+          <li><strong>Transition Metals (Groups 3–12 — Ti, Fe, Cu, Zn):</strong> Dense metals with high melting points used for bright sparks, blue flame colors, and smoke effects.</li>
+          <li><strong>Post-Transition Metals &amp; Metalloids (Al, Sb):</strong> Aluminum burns fiercely for silver-white sparks; antimony creates shimmering glitter trails.</li>
+          <li><strong>Nonmetals &amp; Halogens (C, N, O, P, S, Cl):</strong> Provide the fuels, oxygen-rich oxidizers, and chlorine donors that make colors deeper and brighter.</li>
+        </ul>
+      </div>
+
+      <div class="guide-card">
+        <h3>Why Do Elements Make Different Colors?</h3>
+        <p>
+          Inside a burning firework shell, intense heat excites the electrons inside metal atoms, boosting them to higher energy levels.
+        </p>
+        <p style="margin-top: 0.5rem;">
+          When those electrons immediately drop back down to their ground state, they release that extra energy as a photon of light. Because every element has a unique electron arrangement, each element emits a signature wavelength (color)—the exact same principle used in a chemistry <strong>flame test</strong>!
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIEW 4: FIREWORK SHELL SIMULATOR -->
+  <section id="lab-view" class="view-section">
+    <div class="lab-layout">
+      <div class="lab-controls">
+        <h3 style="margin-bottom: 0.35rem; color: var(--accent-gold);">Build &amp; Launch a Shell</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Combine an oxidizer, a spark/effect metal, and a coloring element to see how pyrotechnicians design aerial shells.
+        </p>
+
+        <div class="lab-field">
+          <label for="simColorSelect">1. Coloring Agent (Star Core)</label>
+          <select id="simColorSelect">
+            <option value="Sr">Strontium (Sr) — Deep Red</option>
+            <option value="Li">Lithium (Li) — Crimson Red</option>
+            <option value="Ca">Calcium (Ca) — Bright Orange</option>
+            <option value="Na">Sodium (Na) — Gold / Yellow</option>
+            <option value="Ba">Barium (Ba) — Vivid Green</option>
+            <option value="Cu">Copper (Cu) — Electric Blue</option>
+            <option value="Mg">Magnesium (Mg) — Brilliant White</option>
+          </select>
+        </div>
+
+        <div class="lab-field">
+          <label for="simEffectSelect">2. Spark / Glitter / Smoke Additive</label>
+          <select id="simEffectSelect">
+            <option value="Al">Aluminum (Al) — Silver/White Sparks</option>
+            <option value="Ti">Titanium (Ti) — Bright White Sparks</option>
+            <option value="Fe">Iron (Fe) — Gold/Orange Sparks</option>
+            <option value="Sb">Antimony (Sb) — Shimmering Glitter</option>
+            <option value="Zn">Zinc (Zn) — Smoke Cloud Trail</option>
+          </select>
+        </div>
+
+        <div class="lab-field">
+          <label for="simOxSelect">3. Oxidizer &amp; Fuel Base</label>
+          <select id="simOxSelect">
+            <option value="KNO3">Potassium Nitrate (K, N, O) + Charcoal (C) &amp; Sulfur (S)</option>
+            <option value="KClO4">Potassium Perchlorate (K, Cl, O) — Extra Vivid Color</option>
+          </select>
+        </div>
+
+        <button class="action-btn primary" id="launchShellBtn" style="width: 100%; padding: 0.7rem; font-size: 0.95rem;">
+          Launch Firework Shell
+        </button>
+      </div>
+
+      <div class="lab-canvas-box">
+        <canvas id="labCanvas" width="850" height="400"></canvas>
+        <div class="lab-readout" id="labReadout">
+          Select your elements on the left and click <strong>Launch Firework Shell</strong> to test your mixture!
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Detailed pyrotechnic dataset (12 Worksheet elements + 7 NOVA Periodic Table elements)
+  const PYRO_DATA = {
+    Li: {
+      worksheet: true,
+      wsOrder: 1,
+      role: "Coloring Agent",
+      category: "color",
+      family: "Alkali Metals",
+      novaFamily: "Alkali Metals",
+      worksheetSummary: "Red color (adds a red color to fireworks)",
+      description: "Lithium salts (such as lithium carbonate) add a vivid red color to fireworks, though slightly softer than strontium.",
+      colorHex: "#ff2a55",
+      effectType: "color"
+    },
+    Na: {
+      worksheet: true,
+      wsOrder: 2,
+      role: "Coloring Agent",
+      category: "color",
+      family: "Alkali Metals",
+      novaFamily: "Alkali Metals",
+      worksheetSummary: "Gold or yellow color",
+      description: "Sodium compounds (like sodium nitrate or cryolite) impart a bright gold or yellow color so intense it can mask other colors.",
+      colorHex: "#ffd000",
+      effectType: "color"
+    },
+    Mg: {
+      worksheet: true,
+      wsOrder: 3,
+      role: "Fuel / Color Enhancer",
+      category: "color",
+      family: "Alkaline Earth Metals",
+      novaFamily: "Earth Alkali Metals",
+      worksheetSummary: "Bright white flames and sparks",
+      description: "Magnesium burns at extremely high temperatures, contributing bright white flames and increasing the overall brilliance of fireworks.",
+      colorHex: "#ffffff",
+      effectType: "flash"
+    },
+    Al: {
+      worksheet: true,
+      wsOrder: 4,
+      role: "Fuel",
+      category: "effect",
+      family: "Post-Transition Metals (Boron Group)",
+      novaFamily: "Other Metals",
+      worksheetSummary: "Silver and white sparks and flames (used in sparklers)",
+      description: "Aluminum is a common fuel that helps produce bright silver and white sparks and flames, such as those seen in sparklers.",
+      colorHex: "#e2e8f0",
+      effectType: "sparks"
+    },
+    Ca: {
+      worksheet: true,
+      wsOrder: 5,
+      role: "Coloring Agent",
+      category: "color",
+      family: "Alkaline Earth Metals",
+      novaFamily: "Alkali Earth Metals",
+      worksheetSummary: "Orange color; deepens firework colors",
+      description: "Calcium salts (such as calcium chloride or sulfate) produce orange flames and are used to deepen other firework colors.",
+      colorHex: "#ff7b00",
+      effectType: "color"
+    },
+    Ti: {
+      worksheet: true,
+      wsOrder: 6,
+      role: "Fuel",
+      category: "effect",
+      family: "Transition Metals",
+      novaFamily: "Transition Metals",
+      worksheetSummary: "Bright silver/white sparks",
+      description: "Titanium is burned as a powder or fine flakes to produce bright, long-lasting silver-white sparks.",
+      colorHex: "#f8fafc",
+      effectType: "sparks"
+    },
+    Fe: {
+      worksheet: true,
+      wsOrder: 7,
+      role: "Fuel",
+      category: "effect",
+      family: "Transition Metals",
+      novaFamily: "Transition Metals",
+      worksheetSummary: "Gold/orange sparks (color depends on temperature)",
+      description: "Iron filings are used to produce branching gold and orange sparks; the temperature of the burning metal determines the spark color.",
+      colorHex: "#f59e0b",
+      effectType: "sparks"
+    },
+    Cu: {
+      worksheet: true,
+      wsOrder: 8,
+      role: "Coloring Agent",
+      category: "color",
+      family: "Transition Metals",
+      novaFamily: "Transition Metals",
+      worksheetSummary: "Blue color",
+      description: "Copper compounds (such as copper chloride) produce blue colors in fireworks—one of the trickiest colors to keep from washing out.",
+      colorHex: "#00aaff",
+      effectType: "color"
+    },
+    Zn: {
+      worksheet: true,
+      wsOrder: 9,
+      role: "Fuel, Smoke Agent",
+      category: "effect",
+      family: "Transition Metals",
+      novaFamily: "Other Metals",
+      worksheetSummary: "Smoke clouds and daytime smoke effects",
+      description: "A bluish-white metal, zinc contributes to creating dense smoke clouds and other special pyrotechnic effects.",
+      colorHex: "#94a3b8",
+      effectType: "smoke"
+    },
+    Sr: {
+      worksheet: true,
+      wsOrder: 10,
+      role: "Coloring Agent, Stabilizer, Oxidizer",
+      category: "color",
+      family: "Alkaline Earth Metals",
+      novaFamily: "Alkali Earth Metals",
+      worksheetSummary: "Red color; stabilizes and oxidizes firework mixtures",
+      description: "Strontium brings a rich, deep red color to fireworks, while also helping to stabilize and oxidize firework mixtures.",
+      colorHex: "#ff1e27",
+      effectType: "color"
+    },
+    Sb: {
+      worksheet: true,
+      wsOrder: 11,
+      role: "Fuel",
+      category: "effect",
+      family: "Metalloids",
+      novaFamily: "Other Metals",
+      worksheetSummary: "Glitter effects",
+      description: "Antimony (often as antimony trisulfide) helps create shimmering, twinkling glitter effects in aerial shells.",
+      colorHex: "#fde047",
+      effectType: "glitter"
+    },
+    Ba: {
+      worksheet: true,
+      wsOrder: 12,
+      role: "Coloring Agent, Stabilizer, Oxidizer",
+      category: "color",
+      family: "Alkaline Earth Metals",
+      novaFamily: "Alkali Earth Metals",
+      worksheetSummary: "Green color; stabilizes other volatile elements",
+      description: "Barium is used to create vivid green colors in fireworks and can also help stabilize other volatile elements.",
+      colorHex: "#10e856",
+      effectType: "color"
+    },
+
+    // Additional 7 Elements from the original PBS NOVA Periodic Table
+    C: {
+      worksheet: false,
+      role: "Fuel",
+      category: "fuel-ox",
+      family: "Nonmetals",
+      novaFamily: "Nonmetals",
+      worksheetSummary: "Main fuel in black powder (charcoal); orange sparks",
+      description: "As charcoal, carbon is the primary fuel in black powder, providing the lift and burst energy as well as warm orange sparks.",
+      colorHex: "#fb923c",
+      effectType: "sparks"
+    },
+    N: {
+      worksheet: false,
+      role: "Oxidizer / Propellant",
+      category: "fuel-ox",
+      family: "Nonmetals",
+      novaFamily: "Nonmetals",
+      worksheetSummary: "Key component of nitrates (oxidizers) and lifting gas",
+      description: "Nitrogen is a key component of nitrates (such as potassium nitrate) that supply oxygen and generate expanding gases to launch shells.",
+      colorHex: "#60a5fa",
+      effectType: "flash"
+    },
+    O: {
+      worksheet: false,
+      role: "Oxidizer",
+      category: "fuel-ox",
+      family: "Nonmetals",
+      novaFamily: "Nonmetals",
+      worksheetSummary: "Essential for combustion (released by oxidizers)",
+      description: "Oxygen is essential for burning. Oxidizers like nitrates, chlorates, and perchlorates release oxygen atoms to fuel rapid combustion.",
+      colorHex: "#38bdf8",
+      effectType: "flash"
+    },
+    P: {
+      worksheet: false,
+      role: "Fuel",
+      category: "fuel-ox",
+      family: "Nonmetals",
+      novaFamily: "Nonmetals",
+      worksheetSummary: "Spontaneous ignition / glow-in-the-dark effects",
+      description: "Phosphorus burns spontaneously in air and is used as a fuel and for glowing pyrotechnic effects.",
+      colorHex: "#a3e635",
+      effectType: "glitter"
+    },
+    S: {
+      worksheet: false,
+      role: "Fuel",
+      category: "fuel-ox",
+      family: "Nonmetals",
+      novaFamily: "Nonmetals",
+      worksheetSummary: "Fuel in black powder; lowers ignition temperature",
+      description: "Odorless and pale yellow, sulfur helps fuel fireworks and lowers the ignition temperature of black powder mixtures.",
+      colorHex: "#facc15",
+      effectType: "flash"
+    },
+    Cl: {
+      worksheet: false,
+      role: "Oxidizer / Color Intensifier",
+      category: "fuel-ox",
+      family: "Halogens",
+      novaFamily: "Halogens",
+      worksheetSummary: "Component of oxidizers; intensifies red, green, and blue flames",
+      description: "Chlorine is an important component of many oxidizers and reacts with metals like copper, strontium, and barium to intensify flame colors.",
+      colorHex: "#34d399",
+      effectType: "color"
+    },
+    K: {
+      worksheet: false,
+      role: "Oxidizer / Fuel",
+      category: "fuel-ox",
+      family: "Alkali Metals",
+      novaFamily: "Alkali Metals",
+      worksheetSummary: "Helps oxidize firework mixtures (potassium nitrate/chlorate); faint violet flame",
+      description: "Potassium is a combustible element used in potassium nitrate and chlorate to oxidize firework mixtures, imparting a faint violet tint.",
+      colorHex: "#c084fc",
+      effectType: "color"
+    }
+  };
+
+  const FAMILY_COLORS = {
+    "Alkali Metals": "#ef4444",
+    "Alkaline Earth Metals": "#f97316",
+    "Transition Metals": "#eab308",
+    "Post-Transition Metals": "#10b981",
+    "Metalloids": "#14b8a6",
+    "Nonmetals": "#3b82f6",
+    "Halogens": "#8b5cf6",
+    "Noble Gases": "#ec4899",
+    "Lanthanides": "#6366f1",
+    "Actinides": "#a855f7"
+  };
+
+  // All 118 Elements [atomicNumber, symbol, name, row, col, familyCategory]
+  const ELEMENTS = [
+    [1,"H","Hydrogen",1,1,"Nonmetals"],
+    [2,"He","Helium",1,18,"Noble Gases"],
+    [3,"Li","Lithium",2,1,"Alkali Metals"],
+    [4,"Be","Beryllium",2,2,"Alkaline Earth Metals"],
+    [5,"B","Boron",2,13,"Metalloids"],
+    [6,"C","Carbon",2,14,"Nonmetals"],
+    [7,"N","Nitrogen",2,15,"Nonmetals"],
+    [8,"O","Oxygen",2,16,"Nonmetals"],
+    [9,"F","Fluorine",2,17,"Halogens"],
+    [10,"Ne","Neon",2,18,"Noble Gases"],
+    [11,"Na","Sodium",3,1,"Alkali Metals"],
+    [12,"Mg","Magnesium",3,2,"Alkaline Earth Metals"],
+    [13,"Al","Aluminum",3,13,"Post-Transition Metals"],
+    [14,"Si","Silicon",3,14,"Metalloids"],
+    [15,"P","Phosphorus",3,15,"Nonmetals"],
+    [16,"S","Sulfur",3,16,"Nonmetals"],
+    [17,"Cl","Chlorine",3,17,"Halogens"],
+    [18,"Ar","Argon",3,18,"Noble Gases"],
+    [19,"K","Potassium",4,1,"Alkali Metals"],
+    [20,"Ca","Calcium",4,2,"Alkaline Earth Metals"],
+    [21,"Sc","Scandium",4,3,"Transition Metals"],
+    [22,"Ti","Titanium",4,4,"Transition Metals"],
+    [23,"V","Vanadium",4,5,"Transition Metals"],
+    [24,"Cr","Chromium",4,6,"Transition Metals"],
+    [25,"Mn","Manganese",4,7,"Transition Metals"],
+    [26,"Fe","Iron",4,8,"Transition Metals"],
+    [27,"Co","Cobalt",4,9,"Transition Metals"],
+    [28,"Ni","Nickel",4,10,"Transition Metals"],
+    [29,"Cu","Copper",4,11,"Transition Metals"],
+    [30,"Zn","Zinc",4,12,"Transition Metals"],
+    [31,"Ga","Gallium",4,13,"Post-Transition Metals"],
+    [32,"Ge","Germanium",4,14,"Metalloids"],
+    [33,"As","Arsenic",4,15,"Metalloids"],
+    [34,"Se","Selenium",4,16,"Nonmetals"],
+    [35,"Br","Bromine",4,17,"Halogens"],
+    [36,"Kr","Krypton",4,18,"Noble Gases"],
+    [37,"Rb","Rubidium",5,1,"Alkali Metals"],
+    [38,"Sr","Strontium",5,2,"Alkaline Earth Metals"],
+    [39,"Y","Yttrium",5,3,"Transition Metals"],
+    [40,"Zr","Zirconium",5,4,"Transition Metals"],
+    [41,"Nb","Niobium",5,5,"Transition Metals"],
+    [42,"Mo","Molybdenum",5,6,"Transition Metals"],
+    [43,"Tc","Technetium",5,7,"Transition Metals"],
+    [44,"Ru","Ruthenium",5,8,"Transition Metals"],
+    [45,"Rh","Rhodium",5,9,"Transition Metals"],
+    [46,"Pd","Palladium",5,10,"Transition Metals"],
+    [47,"Ag","Silver",5,11,"Transition Metals"],
+    [48,"Cd","Cadmium",5,12,"Transition Metals"],
+    [49,"In","Indium",5,13,"Post-Transition Metals"],
+    [50,"Sn","Tin",5,14,"Post-Transition Metals"],
+    [51,"Sb","Antimony",5,15,"Metalloids"],
+    [52,"Te","Tellurium",5,16,"Metalloids"],
+    [53,"I","Iodine",5,17,"Halogens"],
+    [54,"Xe","Xenon",5,18,"Noble Gases"],
+    [55,"Cs","Cesium",6,1,"Alkali Metals"],
+    [56,"Ba","Barium",6,2,"Alkaline Earth Metals"],
+    [57,"La","Lanthanum",9,4,"Lanthanides"],
+    [58,"Ce","Cerium",9,5,"Lanthanides"],
+    [59,"Pr","Praseodymium",9,6,"Lanthanides"],
+    [60,"Nd","Neodymium",9,7,"Lanthanides"],
+    [61,"Pm","Promethium",9,8,"Lanthanides"],
+    [62,"Sm","Samarium",9,9,"Lanthanides"],
+    [63,"Eu","Europium",9,10,"Lanthanides"],
+    [64,"Gd","Gadolinium",9,11,"Lanthanides"],
+    [65,"Tb","Terbium",9,12,"Lanthanides"],
+    [66,"Dy","Dysprosium",9,13,"Lanthanides"],
+    [67,"Ho","Holmium",9,14,"Lanthanides"],
+    [68,"Er","Erbium",9,15,"Lanthanides"],
+    [69,"Tm","Thulium",9,16,"Lanthanides"],
+    [70,"Yb","Ytterbium",9,17,"Lanthanides"],
+    [71,"Lu","Lutetium",9,18,"Lanthanides"],
+    [72,"Hf","Hafnium",6,4,"Transition Metals"],
+    [73,"Ta","Tantalum",6,5,"Transition Metals"],
+    [74,"W","Tungsten",6,6,"Transition Metals"],
+    [75,"Re","Rhenium",6,7,"Transition Metals"],
+    [76,"Os","Osmium",6,8,"Transition Metals"],
+    [77,"Ir","Iridium",6,9,"Transition Metals"],
+    [78,"Pt","Platinum",6,10,"Transition Metals"],
+    [79,"Au","Gold",6,11,"Transition Metals"],
+    [80,"Hg","Mercury",6,12,"Transition Metals"],
+    [81,"Tl","Thallium",6,13,"Post-Transition Metals"],
+    [82,"Pb","Lead",6,14,"Post-Transition Metals"],
+    [83,"Bi","Bismuth",6,15,"Post-Transition Metals"],
+    [84,"Po","Polonium",6,16,"Metalloids"],
+    [85,"At","Astatine",6,17,"Halogens"],
+    [86,"Rn","Radon",6,18,"Noble Gases"],
+    [87,"Fr","Francium",7,1,"Alkali Metals"],
+    [88,"Ra","Radium",7,2,"Alkaline Earth Metals"],
+    [89,"Ac","Actinium",10,4,"Actinides"],
+    [90,"Th","Thorium",10,5,"Actinides"],
+    [91,"Pa","Protactinium",10,6,"Actinides"],
+    [92,"U","Uranium",10,7,"Actinides"],
+    [93,"Np","Neptunium",10,8,"Actinides"],
+    [94,"Pu","Plutonium",10,9,"Actinides"],
+    [95,"Am","Americium",10,10,"Actinides"],
+    [96,"Cm","Curium",10,11,"Actinides"],
+    [97,"Bk","Berkelium",10,12,"Actinides"],
+    [98,"Cf","Californium",10,13,"Actinides"],
+    [99,"Es","Einsteinium",10,14,"Actinides"],
+    [100,"Fm","Fermium",10,15,"Actinides"],
+    [101,"Md","Mendelevium",10,16,"Actinides"],
+    [102,"No","Nobelium",10,17,"Actinides"],
+    [103,"Lr","Lawrencium",10,18,"Actinides"],
+    [104,"Rf","Rutherfordium",7,4,"Transition Metals"],
+    [105,"Db","Dubnium",7,5,"Transition Metals"],
+    [106,"Sg","Seaborgium",7,6,"Transition Metals"],
+    [107,"Bh","Bohrium",7,7,"Transition Metals"],
+    [108,"Hs","Hassium",7,8,"Transition Metals"],
+    [109,"Mt","Meitnerium",7,9,"Transition Metals"],
+    [110,"Ds","Darmstadtium",7,10,"Transition Metals"],
+    [111,"Rg","Roentgenium",7,11,"Transition Metals"],
+    [112,"Cn","Copernicium",7,12,"Transition Metals"],
+    [113,"Nh","Nihonium",7,13,"Post-Transition Metals"],
+    [114,"Fl","Flerovium",7,14,"Post-Transition Metals"],
+    [115,"Mc","Moscovium",7,15,"Post-Transition Metals"],
+    [116,"Lv","Livermorium",7,16,"Post-Transition Metals"],
+    [117,"Ts","Tennessine",7,17,"Halogens"],
+    [118,"Og","Oganesson",7,18,"Noble Gases"]
+  ];
+
+  const WORKSHEET_SYMBOLS = ["Li", "Na", "Mg", "Al", "Ca", "Ti", "Fe", "Cu", "Zn", "Sr", "Sb", "Ba"];
+  let selectedSymbol = "Sr";
+  let activeFilter = "all-pyro";
+  let familyColorMode = false;
+
+  // Build Periodic Table Grid
+  const ptableGrid = document.getElementById("ptableGrid");
+
+  function renderPeriodicTable() {
+    ptableGrid.innerHTML = "";
+
+    // Lanthanide / Actinide guide placeholders in main grid
+    const laHint = document.createElement("div");
+    laHint.className = "series-placeholder";
+    laHint.style.gridRow = "6";
+    laHint.style.gridColumn = "3";
+    laHint.textContent = "57–71";
+    ptableGrid.appendChild(laHint);
+
+    const acHint = document.createElement("div");
+    acHint.className = "series-placeholder";
+    acHint.style.gridRow = "7";
+    acHint.style.gridColumn = "3";
+    acHint.textContent = "89–103";
+    ptableGrid.appendChild(acHint);
+
+    ELEMENTS.forEach(([num, sym, name, row, col, famCat]) => {
+      const tile = document.createElement("div");
+      const pyro = PYRO_DATA[sym];
+      tile.className = "el-tile";
+      tile.style.gridRow = row;
+      tile.style.gridColumn = col;
+      tile.dataset.symbol = sym;
+
+      if (pyro) {
+        tile.classList.add(pyro.worksheet ? "is-worksheet" : "is-nova");
+      }
+
+      // Filter dimming logic
+      let matchesFilter = false;
+      if (activeFilter === "all-pyro" && pyro) matchesFilter = true;
+      else if (activeFilter === "worksheet" && pyro && pyro.worksheet) matchesFilter = true;
+      else if (pyro && pyro.category === activeFilter) matchesFilter = true;
+
+      if (!matchesFilter && !familyColorMode) {
+        tile.classList.add("dimmed");
+      }
+
+      if (familyColorMode) {
+        const fc = FAMILY_COLORS[famCat] || "#64748b";
+        tile.style.borderColor = fc;
+        tile.style.background = `${fc}26`;
+      }
+
+      if (sym === selectedSymbol) {
+        tile.classList.add("selected");
+      }
+
+      tile.innerHTML = `
+        <span class="el-num">${num}</span>
+        <span class="el-sym">${sym}</span>
+        <span class="el-name">${name}</span>
+      `;
+
+      tile.addEventListener("click", () => selectElement(sym));
+      ptableGrid.appendChild(tile);
+    });
+  }
+
+  // Render Family Legend
+  const familyLegend = document.getElementById("familyLegend");
+  Object.entries(FAMILY_COLORS).forEach(([fam, hex]) => {
+    const chip = document.createElement("div");
+    chip.className = "fam-chip";
+    chip.innerHTML = `<span class="fam-dot" style="background:${hex}"></span>${fam}`;
+    familyLegend.appendChild(chip);
+  });
+
+  // Inspector Panel Rendering
+  function selectElement(sym) {
+    selectedSymbol = sym;
+    const el = ELEMENTS.find(e => e[1] === sym);
+    const pyro = PYRO_DATA[sym];
+    const body = document.getElementById("inspectorBody");
+
+    if (pyro) {
+      const novaNote = pyro.novaFamily !== pyro.family
+        ? `<div class="sub-note">Original PBS NOVA label: <strong>${pyro.novaFamily}</strong></div>`
+        : "";
+
+      body.innerHTML = `
+        <div class="el-header-row">
+          <div class="big-symbol-box" style="border-color: ${pyro.colorHex}">
+            <span class="num">${el[0]}</span>
+            <span class="sym" style="color: ${pyro.colorHex}">${el[1]}</span>
+          </div>
+          <div class="el-title-meta">
+            <h2>${el[2]}</h2>
+            <div class="badge-row">
+              <span class="role-badge">${pyro.role}</span>
+              ${pyro.worksheet ? `<span class="ws-badge">Worksheet #${pyro.wsOrder}</span>` : ""}
+            </div>
+          </div>
+        </div>
+
+        <div class="data-field">
+          <div class="data-field-label">Periodic Table Family</div>
+          <div class="data-field-value">${pyro.family}</div>
+          ${novaNote}
+        </div>
+
+        <div class="data-field">
+          <div class="data-field-label">Colors and/or Effects</div>
+          <div class="data-field-value" style="color: ${pyro.colorHex === '#ffffff' ? '#f8fafc' : pyro.colorHex}; font-weight: 700;">
+            ${pyro.worksheetSummary}
+          </div>
+          <div class="sub-note" style="color: #cbd5e1; margin-top: 0.45rem;">${pyro.description}</div>
+        </div>
+
+        <div class="quick-nav">
+          <button id="prevWsBtn">← Prev Worksheet Element</button>
+          <button id="nextWsBtn">Next Worksheet Element →</button>
+        </div>
+      `;
+
+      document.getElementById("prevWsBtn").addEventListener("click", () => stepWorksheet(-1));
+      document.getElementById("nextWsBtn").addEventListener("click", () => stepWorksheet(1));
+      triggerMiniBurst(pyro.colorHex, pyro.effectType);
+    } else {
+      body.innerHTML = `
+        <div class="el-header-row">
+          <div class="big-symbol-box" style="border-color: #475569">
+            <span class="num">${el[0]}</span>
+            <span class="sym">${el[1]}</span>
+          </div>
+          <div class="el-title-meta">
+            <h2>${el[2]}</h2>
+            <div class="badge-row">
+              <span class="role-badge" style="color: #94a3b8; border-color: #475569; background: rgba(148,163,184,0.1);">Non-Pyrotechnic Element</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="data-field">
+          <div class="data-field-label">Periodic Table Family</div>
+          <div class="data-field-value">${el[5]}</div>
+        </div>
+
+        <div class="data-field">
+          <div class="data-field-label">Role in Fireworks</div>
+          <div class="data-field-value" style="font-size: 0.88rem; color: #cbd5e1;">
+            Not typically used in standard fireworks displays (many are too rare, expensive, radioactive, or unreactive). Click one of the gold-outlined elements to complete your worksheet!
+          </div>
+        </div>
+      `;
+      triggerMiniBurst("#475569", "none");
+    }
+
+    renderPeriodicTable();
+  }
+
+  function stepWorksheet(dir) {
+    const idx = WORKSHEET_SYMBOLS.indexOf(selectedSymbol);
+    if (idx === -1) {
+      selectElement(WORKSHEET_SYMBOLS[0]);
+      return;
+    }
+    const nextIdx = (idx + dir + WORKSHEET_SYMBOLS.length) % WORKSHEET_SYMBOLS.length;
+    selectElement(WORKSHEET_SYMBOLS[nextIdx]);
+  }
+
+  // Mini Canvas Burst Animation in Inspector
+  const burstCanvas = document.getElementById("burstCanvas");
+  const bCtx = burstCanvas.getContext("2d");
+  let miniParticles = [];
+
+  function triggerMiniBurst(colorHex, effectType) {
+    miniParticles = [];
+    if (effectType === "none") return;
+
+    const cx = burstCanvas.width / 2;
+    const cy = burstCanvas.height / 2;
+    const count = effectType === "smoke" ? 45 : 75;
+
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.25;
+      const speed = effectType === "smoke" ? 0.6 + Math.random() * 1.4 : 1.5 + Math.random() * 3.4;
+      miniParticles.push({
+        x: cx,
+        y: cy,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        alpha: 1,
+        size: effectType === "smoke" ? 8 + Math.random() * 10 : 2.2 + Math.random() * 1.8,
+        color: colorHex,
+        type: effectType,
+        twinkle: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  function animateMiniCanvas() {
+    bCtx.fillStyle = "rgba(5, 8, 17, 0.24)";
+    bCtx.fillRect(0, 0, burstCanvas.width, burstCanvas.height);
+
+    miniParticles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += p.type === "smoke" ? -0.01 : 0.04;
+      p.vx *= 0.985;
+      p.vy *= 0.985;
+      p.alpha -= p.type === "smoke" ? 0.011 : 0.015;
+      p.twinkle += 0.35;
+
+      if (p.alpha > 0) {
+        bCtx.save();
+        let drawAlpha = p.alpha;
+        if (p.type === "glitter") {
+          drawAlpha = p.alpha * (0.4 + 0.6 * Math.abs(Math.sin(p.twinkle)));
+        }
+        bCtx.globalAlpha = Math.max(0, drawAlpha);
+        bCtx.fillStyle = p.color;
+        bCtx.beginPath();
+        bCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        bCtx.fill();
+        bCtx.restore();
+      }
+    });
+
+    miniParticles = miniParticles.filter(p => p.alpha > 0);
+    requestAnimationFrame(animateMiniCanvas);
+  }
+  animateMiniCanvas();
+
+  document.getElementById("replayBurstBtn").addEventListener("click", () => {
+    const pyro = PYRO_DATA[selectedSymbol];
+    if (pyro) triggerMiniBurst(pyro.colorHex, pyro.effectType);
+  });
+
+  // Filter Buttons
+  document.querySelectorAll(".filter-btn[data-filter]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".filter-btn[data-filter]").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      activeFilter = btn.dataset.filter;
+      renderPeriodicTable();
+    });
+  });
+
+  document.getElementById("toggleFamilyColors").addEventListener("click", function () {
+    familyColorMode = !familyColorMode;
+    this.classList.toggle("active", familyColorMode);
+    ptableGrid.classList.toggle("family-mode", familyColorMode);
+    familyLegend.classList.toggle("visible", familyColorMode);
+    renderPeriodicTable();
+  });
+
+  // Tab Navigation
+  function switchTab(viewId) {
+    document.querySelectorAll(".tab-btn").forEach(b => {
+      b.classList.toggle("active", b.dataset.view === viewId);
+    });
+    document.querySelectorAll(".view-section").forEach(sec => {
+      sec.classList.toggle("active", sec.id === viewId);
+    });
+  }
+
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => switchTab(btn.dataset.view));
+  });
+
+  document.getElementById("jumpGuideBtn").addEventListener("click", () => switchTab("guide-view"));
+
+  // Build Interactive 12-Element Worksheet Table
+  const wsTbody = document.getElementById("worksheetTbody");
+  WORKSHEET_SYMBOLS.forEach(sym => {
+    const el = ELEMENTS.find(e => e[1] === sym);
+    const pyro = PYRO_DATA[sym];
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td class="sym-cell" title="View ${el[2]} on Periodic Table">${sym}</td>
+      <td><input type="text" class="ws-input" data-sym="${sym}" data-field="name" placeholder="Element name..." /></td>
+      <td><input type="text" class="ws-input" data-sym="${sym}" data-field="family" placeholder="Periodic family..." /></td>
+      <td><input type="text" class="ws-input" data-sym="${sym}" data-field="effect" placeholder="Color and/or effect..." /></td>
+    `;
+
+    tr.querySelector(".sym-cell").addEventListener("click", () => {
+      switchTab("table-view");
+      selectElement(sym);
+    });
+
+    wsTbody.appendChild(tr);
+  });
+
+  // Worksheet Check / Reveal / Clear
+  const EFFECT_KEYWORDS = {
+    Li: ["red"],
+    Na: ["yellow", "gold"],
+    Mg: ["white", "bright"],
+    Al: ["silver", "white", "spark"],
+    Ca: ["orange", "deepen"],
+    Ti: ["spark", "silver", "white"],
+    Fe: ["spark", "gold", "orange"],
+    Cu: ["blue"],
+    Zn: ["smoke"],
+    Sr: ["red", "stabiliz", "oxidiz"],
+    Sb: ["glitter"],
+    Ba: ["green", "stabiliz"]
+  };
+
+  document.getElementById("checkAnswersBtn").addEventListener("click", () => {
+    let correctCount = 0;
+    const inputs = document.querySelectorAll(".ws-input");
+
+    inputs.forEach(inp => {
+      const sym = inp.dataset.sym;
+      const field = inp.dataset.field;
+      const val = inp.value.trim().toLowerCase();
+      const el = ELEMENTS.find(e => e[1] === sym);
+      const pyro = PYRO_DATA[sym];
+
+      inp.classList.remove("correct", "needs-review");
+      if (!val) return;
+
+      let ok = false;
+      if (field === "name") {
+        ok = val === el[2].toLowerCase() || (sym === "Al" && val === "aluminium");
+      } else if (field === "family") {
+        const famLower = pyro.family.toLowerCase();
+        const novaLower = pyro.novaFamily.toLowerCase();
+        ok = famLower.includes(val) || val.includes(novaLower) ||
+             (sym === "Al" && (val.includes("boron") || val.includes("other") || val.includes("post"))) ||
+             (sym === "Sb" && (val.includes("metalloid") || val.includes("other") || val.includes("nitrogen"))) ||
+             (sym === "Zn" && (val.includes("transition") || val.includes("other")));
+      } else if (field === "effect") {
+        ok = EFFECT_KEYWORDS[sym].some(kw => val.includes(kw));
+      }
+
+      if (ok) {
+        inp.classList.add("correct");
+        correctCount++;
+      } else {
+        inp.classList.add("needs-review");
+      }
+    });
+
+    document.getElementById("wsFeedback").textContent =
+      `Checked! ${correctCount} of ${inputs.length} boxes verified. Green = matches key concepts; pink = double-check using the Periodic Table.`;
+  });
+
+  document.getElementById("revealAnswersBtn").addEventListener("click", () => {
+    document.querySelectorAll(".ws-input").forEach(inp => {
+      const sym = inp.dataset.sym;
+      const field = inp.dataset.field;
+      const el = ELEMENTS.find(e => e[1] === sym);
+      const pyro = PYRO_DATA[sym];
+
+      inp.classList.remove("needs-review");
+      inp.classList.add("correct");
+
+      if (field === "name") inp.value = el[2];
+      else if (field === "family") inp.value = pyro.family;
+      else if (field === "effect") inp.value = pyro.worksheetSummary;
+    });
+    document.getElementById("wsFeedback").textContent = "Answer key filled in for all 12 worksheet elements.";
+  });
+
+  document.getElementById("clearWorksheetBtn").addEventListener("click", () => {
+    document.querySelectorAll(".ws-input").forEach(inp => {
+      inp.value = "";
+      inp.classList.remove("correct", "needs-review");
+    });
+    document.getElementById("wsFeedback").textContent = "";
+  });
+
+  // Full Firework Shell Simulator (Tab 4)
+  const labCanvas = document.getElementById("labCanvas");
+  const lCtx = labCanvas.getContext("2d");
+  let rockets = [];
+  let shellParticles = [];
+
+  document.getElementById("launchShellBtn").addEventListener("click", () => {
+    const colorSym = document.getElementById("simColorSelect").value;
+    const effectSym = document.getElementById("simEffectSelect").value;
+    const oxVal = document.getElementById("simOxSelect").value;
+
+    const cData = PYRO_DATA[colorSym];
+    const eData = PYRO_DATA[effectSym];
+
+    rockets.push({
+      x: 180 + Math.random() * (labCanvas.width - 360),
+      y: labCanvas.height,
+      targetY: 95 + Math.random() * 90,
+      vy: -7.5,
+      colorData: cData,
+      effectData: eData,
+      isPerchlorate: oxVal === "KClO4"
+    });
+
+    document.getElementById("labReadout").innerHTML =
+      `<strong>Launched Shell:</strong> Oxidizer &amp; Fuel (<strong>${oxVal} + C + S</strong>) lifts the shell → Core color from <strong>${colorSym}</strong> (${cData.worksheetSummary}) + Secondary effect from <strong>${effectSym}</strong> (${eData.worksheetSummary}).`;
+  });
+
+  function animateLab() {
+    lCtx.fillStyle = "rgba(4, 7, 15, 0.22)";
+    lCtx.fillRect(0, 0, labCanvas.width, labCanvas.height);
+
+    // Update rising rockets
+    rockets.forEach((r, idx) => {
+      r.y += r.vy;
+      lCtx.fillStyle = "#fbbf24";
+      lCtx.beginPath();
+      lCtx.arc(r.x, r.y, 3, 0, Math.PI * 2);
+      lCtx.fill();
+
+      if (r.y <= r.targetY) {
+        // Explode into dual-ring shell
+        const colorCount = r.isPerchlorate ? 95 : 70;
+        for (let i = 0; i < colorCount; i++) {
+          const ang = (Math.PI * 2 * i) / colorCount + (Math.random() - 0.5) * 0.15;
+          const spd = 2.2 + Math.random() * 3.8;
+          shellParticles.push({
+            x: r.x,
+            y: r.y,
+            vx: Math.cos(ang) * spd,
+            vy: Math.sin(ang) * spd,
+            alpha: 1,
+            size: r.isPerchlorate ? 3.2 : 2.5,
+            color: r.colorData.colorHex,
+            type: "color",
+            twinkle: Math.random() * 6
+          });
+        }
+        // Inner effect ring
+        for (let j = 0; j < 45; j++) {
+          const ang = (Math.PI * 2 * j) / 45 + Math.random() * 0.2;
+          const spd = 1.0 + Math.random() * 2.2;
+          shellParticles.push({
+            x: r.x,
+            y: r.y,
+            vx: Math.cos(ang) * spd,
+            vy: Math.sin(ang) * spd,
+            alpha: 1,
+            size: r.effectData.effectType === "smoke" ? 11 : 2.3,
+            color: r.effectData.colorHex,
+            type: r.effectData.effectType,
+            twinkle: Math.random() * 6
+          });
+        }
+        rockets.splice(idx, 1);
+      }
+    });
+
+    // Update burst particles
+    shellParticles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += p.type === "smoke" ? -0.008 : 0.045;
+      p.vx *= 0.985;
+      p.vy *= 0.985;
+      p.alpha -= p.type === "smoke" ? 0.008 : 0.012;
+      p.twinkle += 0.35;
+
+      if (p.alpha > 0) {
+        lCtx.save();
+        let a = p.alpha;
+        if (p.type === "glitter") a *= 0.35 + 0.65 * Math.abs(Math.sin(p.twinkle));
+        lCtx.globalAlpha = Math.max(0, a);
+        lCtx.fillStyle = p.color;
+        lCtx.beginPath();
+        lCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        lCtx.fill();
+        lCtx.restore();
+      }
+    });
+
+    shellParticles = shellParticles.filter(p => p.alpha > 0);
+    requestAnimationFrame(animateLab);
+  }
+  animateLab();
+
+  // Initialize default view with Strontium (Sr) selected
+  selectElement("Sr");
+</script>
+</body>
+</html>
